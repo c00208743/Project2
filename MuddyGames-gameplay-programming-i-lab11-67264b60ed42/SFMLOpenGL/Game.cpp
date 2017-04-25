@@ -76,7 +76,7 @@ void Game::run()
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 			{
-					//view = rotate(view, 0.01f, glm::vec3(0, 1, 0)); // Rotate
+					view = rotate(view, 0.01f, glm::vec3(0, 1, 0)); // Rotate
 			
 				
 			}
@@ -84,19 +84,19 @@ void Game::run()
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 			{
 
-					//player = rotate(player, -0.01f, glm::vec3(0, 1, 0)); // Rotate
+					view = rotate(view, -0.01f, glm::vec3(0, 1, 0)); // Rotate
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			{
 			
-
+				view = rotate(view, 0.01f, glm::vec3(1, 0, 0)); // Rotate
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			{
 		
-
+				view = rotate(view, -0.01f, glm::vec3(1, 0, 0)); // Rotate
 			}
 		}
 		update(m_cumulativeTime);
@@ -321,7 +321,7 @@ void Game::initialize()
 	// Projection Matrix 
 	projection = perspective(
 		45.0f,					// Field of View 45 degrees
-		4.0f / 3.0f,			// Aspect ratio
+		2.0f / 3.0f,			// Aspect ratio
 		5.0f,					// Display Range Min : 0.1f unit
 		100.0f					// Display Range Max : 100.0f unit
 		);
@@ -356,6 +356,16 @@ void Game::update(sf::Time deltaTime)
 	mvp = projection * view * model1;
 
 	m_cumulativeTime += deltaTime;
+	
+	if (model1[3].z > -2)
+	{
+		model1 = translate(model1, glm::vec3(0, 0, -0.005f)); // translate
+	}
+
+	if (model1[3].z <= -2)
+	{
+		model1[3].z = 2;
+	}
 
 	
 
@@ -397,6 +407,7 @@ void Game::render()
 	glEnableVertexAttribArray(colorID);
 	glEnableVertexAttribArray(uvID);
 
+	setCamera();
 	//Draw Element Arrays
 	glDrawElements(GL_TRIANGLES, 3 * INDICES, GL_UNSIGNED_INT, NULL);
 
@@ -419,5 +430,25 @@ void Game::unload()
 	glDeleteBuffers(1, &vib);	//Delete Vertex Index Buffer
 	stbi_image_free(img_data1);		//Free image
 	stbi_image_free(img_data2);		//Free image
+}
+
+void Game::setCamera()
+{
+	glViewport(screenWidth / 2, 0, screenWidth / 2, screenHeight);
+	glLoadIdentity();
+	gluLookAt(0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f);
+
+	glDrawElements(GL_TRIANGLES, 3 * INDICES, GL_UNSIGNED_INT, NULL);
+
+	glViewport(0, 0, screenWidth / 2, screenHeight);
+	glLoadIdentity();
+	gluLookAt(0.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f);
+
+	glDrawElements(GL_TRIANGLES, 3 * INDICES, GL_UNSIGNED_INT, NULL);
+
 }
 

@@ -31,6 +31,8 @@ public:
 	void run();
 	bool jumping = false;
 	bool falling = false;
+	int screenWidth = 800;
+	int screenHeight = 600;
 
 private:
 	Window window;
@@ -40,6 +42,7 @@ private:
 	void update(sf::Time);
 	void render();
 	void unload();
+	void setCamera();
 	double count = 0;
 };
 
